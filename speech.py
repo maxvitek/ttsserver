@@ -39,7 +39,7 @@ class Speech():
         msg = cgi.escape(message)
         trans_URL = "x-rincon-mp3radio://translate.google.com/translate_tts?tl=en&q=%s" % msg
         self.device.play_uri(trans_URL, title="Speech")
-        
+
         self.device.volume = prefade_volume
 
         impatience = time.time()
@@ -65,12 +65,12 @@ class Speech():
         self.device.stop()
         # Restore the sonos device back to it's previous state
         snap.restore()
-        
+
         # fade back in
         for v in range(prefade_volume):
             self.device.volume += 1
             time.sleep(0.25)
-        
+
         # We no longer want to  receive messages
         sub.unsubscribe()
         event_listener.stop()

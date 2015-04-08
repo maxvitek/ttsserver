@@ -1,8 +1,5 @@
 import os
-import subprocess
 import logging
-import yaml
-import requests
 import json
 
 import soco
@@ -29,17 +26,14 @@ def enter_phrase():
 @app.route('/phrase', methods=['POST'])
 def tts_phrase():
     zones = {zone.player_name: zone for zone in soco.discover()}
-    try:
-        data = request.get_data()
-        if isinstance(data, str):  # handle jquery nonsense
-            data = json.loads(data)
-        zone = zones[data['zone']]
-        text = data['text']
-        speech = Speech(zone)
-        speech.say(text) 
-        return 'success'
-    except Exception as e:
-        logger.exception(e, exc_info=True)
+    data = request.get_data()
+    if isinstance(data, str):  # handle jquery nonsense
+        data = json.loads(data)
+    zone = zones[data['zone']]
+    text = data['text']
+    speech = Speech(zone)
+    speech.say(text)
+    return 'success'
 
 
 if __name__ == '__main__':
