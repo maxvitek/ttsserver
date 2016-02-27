@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import cgi
 import time
+from urllib import urlencode
 
 from Queue import Empty
 
@@ -8,6 +9,8 @@ from Queue import Empty
 from soco.snapshot import Snapshot
 #from soco.event_structures import LastChangeEvent
 from soco.events import event_listener
+
+from gtts_token.gtts_token import Token
 
 
 #########################################################################
@@ -26,10 +29,10 @@ class Speech():
         sub = self.device.avTransport.subscribe()
 
         # fade out
-        prefade_volume = self.device.volume
-        for v in range(prefade_volume):
-            self.device.volume -= 1
-            time.sleep(0.25)
+        #prefade_volume = self.device.volume
+        #for v in range(prefade_volume):
+        #    self.device.volume -= 1
+        #    time.sleep(0.25)
 
         # Take a snapshot of the current sonos device state, we will want
         # to roll back to this when we are done
@@ -37,16 +40,29 @@ class Speech():
         snap.snapshot()
 
         msg = cgi.escape(message)
-        trans_URL = "x-rincon-mp3radio://translate.google.com/translate_tts?tl=en&q=%s" % msg
+        payload = { 'ie' : 'UTF-8',
+                   'q' : message,
+                   'tl' : 'en',
+                   'total' : 1,
+                   'idx' : 0,
+                   'client' : 't',
+                   'textlen' : len(message),
+                   'tk' : Token().calculate_token(message)}
+        #trans_URL = "x-rincon-mp3radio://translate.google.com/translate_tts?tl=en&q=%s" % msg
+        trans_URL = "x-rincon-mp3radio://translate.google.com/translate_tts?" + urlencode(payload)
+        print trans_URL
+        #from IPython import embed
+        #embed()
         self.device.play_uri(trans_URL, title="Speech")
 
-        self.device.volume = prefade_volume
+        #self.device.volume = prefade_volume
 
         impatience = time.time()
         patience = time.time() + 20
         while patience > impatience:
             try:
                 event = sub.events.get(timeout=0.5)
+                print event.variables
                 if 'restart_pending' not in event.variables:
                     continue
                 restart_pending = event.variables['restart_pending']
@@ -67,9 +83,9 @@ class Speech():
         snap.restore()
 
         # fade back in
-        for v in range(prefade_volume):
-            self.device.volume += 1
-            time.sleep(0.25)
+        #for v in range(prefade_volume):
+        #    self.device.volume += 1
+        #    time.sleep(0.25)
 
         # We no longer want to  receive messages
         sub.unsubscribe()
