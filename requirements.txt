@@ -1,0 +1,4 @@
+soco==0.11.1
+Flask==0.10.1
+Flask-Bootstrap==3.3.5.7
+gTTS-token==1.0.1

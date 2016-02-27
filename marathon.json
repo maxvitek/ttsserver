@@ -1,0 +1,26 @@
+{
+  "id": "/tts",
+  "container": {
+    "type": "DOCKER",
+    "docker": {
+      "image": "registry.marathon.mesos:31500/tts:secret",
+      "network": "HOST",
+      "forcePullImage": true
+    }
+  },
+  "healthChecks": [{
+	  "path": "/",
+	  "portIndex": 0,
+	  "protocol": "HTTP",
+	  "gracePeriodSeconds": 30,
+	  "intervalSeconds": 60,
+	  "timeoutSeconds": 20,
+	  "maxConsecutiveFailures": 3,
+	  "ignoreHttp1xx": false
+  }], 
+  "instances": 1,
+  "cpus": 0.25,
+  "mem": 256,
+  "ports": [31500],
+  "requirePorts": true
+}

@@ -8,7 +8,9 @@ from speech import Speech  # this is taken from SoCo github #99
 from flask import Flask, request, render_template
 from flask_bootstrap import Bootstrap
 
-BIND_IP = os.getenv('TTSSONOS_BIND_IP', '0.0.0.0:5000')
+
+TTS_SERVER_PORT = int(os.getenv('TTS_SERVER_PORT', default=os.getenv(
+    'PORT0', default=5000)))
 
 logger = logging.getLogger()
 logging.basicConfig()
@@ -37,5 +39,4 @@ def tts_phrase():
 
 
 if __name__ == '__main__':
-    host, port = BIND_IP.split(':')
-    app.run(host=host, port=int(port))
+    app.run(host='0.0.0.0', port=TTS_SERVER_PORT)
